@@ -43,7 +43,7 @@ app.set('views', path.join(__dirname, '../frontend'))
 let dburl = "mongodb+srv://roameramit2001:roameramit2001@cluster0.amndb01.mongodb.net/?retryWrites=true&w=majority"
 let dburlof = "mongodb://127.0.0.1/logindataAdmin"
 // Connect to database
-mongoose.connect(dburlof).then(() => {
+mongoose.connect(dburl).then(() => {
     console.log("DB Connected")
 }).catch((err) => {
     console.log(err)
