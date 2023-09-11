@@ -1,6 +1,7 @@
 <%- include('header.ejs') %>
 
     <head>
+
         <!-- DataTables CSS -->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
         <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
@@ -16,6 +17,22 @@
 
 
     <style>
+        #TotalEmaildata_length {
+            display: none;
+        }
+
+        #TodayEmailsData_length {
+            display: none;
+        }
+
+        #weeklyEmailsData_length {
+            display: none;
+        }
+
+        #MonthlyEmailsData_length {
+            display: none;
+        }
+
         /* Add some basic styling to the dropdown */
         .dropdown {
             position: relative;
@@ -427,9 +444,9 @@
                                             <tbody>
                                                 <% let rowIndextoday=1; %>
                                                     <% todayData.slice().reverse().forEach((companyemail)=> { %>
-                                                        <!-- Reverse the companyemails array here -->
+
                                                         <tr data-row-index="<%= rowIndextoday %>">
-                                                            <!-- Use the updated variable "rowIndex" instead of "index" to avoid conflicts -->
+
                                                             <td>
                                                                 <input type="checkbox"
                                                                     id="checkbox-<%= rowIndextoday %>"
@@ -599,10 +616,6 @@
 
     <!-- Show Data tabel  -->
     <script>
-
-
-
-
         $(document).ready(function () {
             $('#TotalEmaildata').DataTable({
                 dom: 'Blfrtip',
@@ -613,7 +626,6 @@
                 buttons: [
                     'pageLength', 'copy', 'csv', 'excel', 'pdf', 'print'
                 ],
-                paging: 'full', // or 'simple_numbers' for showing page numbers
                 responsive: true,
                 columnDefs: [
                     { responsivePriority: 1, targets: 0 },
@@ -636,7 +648,7 @@
         // });
         $(document).ready(function () {
             // jQuery('#myTable').DataTable();
-            $('#MergedEmailData').DataTable({
+            $('#TodayEmailsData').DataTable({
                 dom: 'Blfrtip',
                 lengthMenu: [
                     [10, 25, 100, 250, -1],
@@ -645,7 +657,7 @@
                 buttons: [
                     'pageLength', 'copy', 'csv', 'excel', 'pdf', 'print'
                 ],
-                paging: false,
+                // paging: false,
                 responsive: true,
                 columnDefs: [
                     { responsivePriority: 1, targets: 0 },
@@ -675,7 +687,7 @@
                 buttons: [
                     'pageLength', 'copy', 'csv', 'excel', 'pdf', 'print'
                 ],
-                paging: false,
+                // paging: false,
                 responsive: true,
                 columnDefs: [
                     { responsivePriority: 1, targets: 0 },
@@ -705,7 +717,7 @@
                 buttons: [
                     'pageLength', 'copy', 'csv', 'excel', 'pdf', 'print'
                 ],
-                paging: false,
+                // paging: false,
                 responsive: true,
                 columnDefs: [
                     { responsivePriority: 1, targets: 0 },
@@ -718,7 +730,6 @@
 
 
     </script>
-
 
 
 
@@ -831,6 +842,7 @@
     <script>
         var formattedStartDate;
         var formattedEndDate;
+
         $(function () {
             $('input[name="daterange"]').daterangepicker({
                 opens: 'left',
@@ -860,16 +872,12 @@
 
             try {
 
-                // const dropdown = document.getElementById('categoryDropdown');
-                // const selectedOption = dropdown.options[dropdown.selectedIndex];
-                // const selectedCategory = selectedOption.innerHTML;
-
                 let getdatafromlocalstorage = localStorage.getItem("amitfilterbyday")
                 console.log("local", getdatafromlocalstorage)
 
                 if (getdatafromlocalstorage === "amitcategorydata") {
                     // Make a GET request to fetch the filtered data from the server
-                    const response = await fetch(`/filterdateandcategory?selectedCategory=${selectedCategory}&startDate=${startDate}&endDate=${endDate}`);
+                    const response = await fetch(`/filterdateandcategory?selectedCategory=${selectedCategoryValues}&startDate=${startDate}&endDate=${endDate}`);
 
 
                     const data = await response.json();
@@ -901,7 +909,7 @@
 
                     // Make a GET request to fetch the filtered data from the server
                     const response = await fetch(`/filterDatabydate?startDate=${startDate}&endDate=${endDate}`);
-                    // localStorage.setItem("amitfilterbyday", "amitdatedata")
+                    localStorage.setItem("amitfilterbyday", "amitdatedata")
 
                     console.log("in funct")
 
@@ -941,16 +949,7 @@
 
     <!-- Filter by Day -->
     <script>
-        // Get the filter button and date filter section
-
-        // const dateFilterSection = document.getElementById('date-filter-section');
         const applyDateFilterBtn = document.getElementById('apply-date-filter-btn');
-        // const cancelDateFilterBtn = document.getElementById('cancel-date-filter-btn');
-
-
-        // Function to handle filter by date button click event
-
-
 
         // Function to handle apply date filter button click event
         applyDateFilterBtn.addEventListener('click', async () => {
@@ -964,12 +963,13 @@
                 // const selectedOption = dropdown.options[dropdown.selectedIndex];
                 // const selectedCategory = selectedOption.innerHTML;
 
+                // console.log("Hello" , selectedCategoryValues)
                 let getdatafromlocalstorage = localStorage.getItem("amitfilterbyday")
                 console.log("local", getdatafromlocalstorage)
 
                 if (getdatafromlocalstorage === "amitcategorydata") {
                     console.log("if in day")
-                    const response = await fetch(`api/filterDataboth?selectedCategory=${selectedCategory}&selectedDate=${selectedDate}`);
+                    const response = await fetch(`api/filterDataboth?selectedCategory=${selectedCategoryValues}&selectedDate=${selectedDate}`);
                     const filteredData = await response.json();
 
                     // Display the filtered data in the table (modify the table rows accordingly)
@@ -986,6 +986,7 @@
               <td>${index + 1}</td>
               <td>${data.DomainName}</td>
               <td>${data.Email}</td>
+              <td>${data.category}</td>
             </tr>
           `;
                         tableBody.innerHTML += newRow;
@@ -1012,6 +1013,7 @@
               <td>${index + 1}</td>
               <td>${data.DomainName}</td>
               <td>${data.Email}</td>
+              <td>${data.category}</td>
             </tr>
           `;
                         tableBody.innerHTML += newRow;
@@ -1366,6 +1368,7 @@
                         selectedCategoryValues.push(categoryName);
                         selectedCategories.appendChild(selectedCategory);
 
+                        // console.log(selectedCategoryValues)
                         // Update the visible input field when a category is selected
                         categoryInput.value = selectedCategoryValues.join(", "); // You can use a different separator if needed
                     } else {
@@ -1427,11 +1430,15 @@
 
         async function filterByCategory() {
             try {
-                console.log(selectedCategoryValues)
+
+
+                // console.log(selectedCategoryValues)
                 let getdatafromlocalstorage = localStorage.getItem("amitfilterbyday")
                 console.log("local", getdatafromlocalstorage)
-                // const startDate = document.getElementById('startDate').value;
-                // const endDate = document.getElementById('endDate').value;
+
+                const startDate = formattedStartDate
+                const endDate = formattedEndDate
+             
 
                 if (getdatafromlocalstorage === "amitdaydata") {
                     console.log("inner if")
@@ -1464,6 +1471,8 @@
 
                 } else if (getdatafromlocalstorage === "amitdatedata") {
 
+
+
                     const response = await fetch(`filterdateandcategory?selectedCategory=${selectedCategoryValues}&startDate=${startDate}&endDate=${endDate}`);
                     const filteredData = await response.json();
 
@@ -1493,7 +1502,7 @@
 
                     // Make a GET request to the filterData route with the selected category
                     const response = await fetch(`/api/filterDatabyCategory?selectedCategory=${selectedCategoryValues}`);
-                    // localStorage.setItem("amitfilterbyday", "amitcategorydata")
+                    localStorage.setItem("amitfilterbyday", "amitcategorydata")
 
                     const filteredData = await response.json();
 
@@ -1532,6 +1541,12 @@
 
 
 
+
+
+
+
+
+
         // For Delete Category
         async function deleteSelectedItem() {
             console.log(selectedCategoryValues)
@@ -1560,19 +1575,39 @@
     </script>
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     <!--Total emails select All button and delete button handle -->
     <script>
-
         // Select Box Count Start
         function updateSelectedCount() {
             const checkboxes = document.getElementsByClassName('checkbox-item');
+
             const selectedCount = document.getElementById('selectedCount');
             let count = 0;
 
             for (let i = 0; i < checkboxes.length; i++) {
+
                 if (checkboxes[i].checked) {
                     count++;
                 }
+
             }
 
             selectedCount.textContent = count;
@@ -1588,40 +1623,89 @@
 
         // Update the count of selected rows on page load
         window.addEventListener('DOMContentLoaded', () => {
-            // updateSelectedCount();
+            updateSelectedCount();
         });
         // Select Box Count End 
-
-
-        // Check box delete button and show all selected row
-        // Get all checkboxes
         const checkboxes = document.querySelectorAll('.checkbox-item');
         // Get the delete button
         const deleteButton = document.getElementById('delete-btn');
 
 
-        const selectAllButton = document.getElementById('select-all-btn');
+        // Handle Select All 
 
-        // Function to handle "Select All" button click event
-        function handleSelectAllButtonClick() {
-            const checkboxes = document.querySelectorAll('.checkbox-item');
-            const areAllChecked = Array.from(checkboxes).every(checkbox => checkbox.checked);
+        $("#select-all-btn").click(function () {
+            const $container = $("#totalEmailsTableContainer");
+            const $containerToday = $("#todayEmailsTableContainer");
+            const $containerWeek = $("#weeklyEmailsTableContainer");
+            const $containerMonth = $("#monthlyEmailsTableContainer");
 
-            // Toggle the checked state of all checkboxes
-            checkboxes.forEach(checkbox => {
-                checkbox.checked = !areAllChecked;
-            });
-            updateSelectedCount()
-        }
+            // Check if the container is displayed (has display: block)
+            if ($container.is(":visible")) {
+                // Check if all checkboxes are checked
+                const allChecked = $container.find(".checkbox-item:checked").length === $container.find(".checkbox-item").length;
 
-        // Attach the handleSelectAllButtonClick function to the "Select All" button click event
-        selectAllButton.addEventListener('click', handleSelectAllButtonClick);
+                // Toggle the state of checkboxes
+                $container.find("tr:visible").each(function () {
+                    const $checkbox = $(this).find(".checkbox-item");
+                    $checkbox.prop("checked", !allChecked); // Toggle the state
+                });
+
+                // Count the selected checkboxes
+                const selectedCheckboxes = $container.find(".checkbox-item:checked").length;
+
+            } else if ($containerToday.is(":visible")) {
+                // Check if all checkboxes are checked
+                const allChecked = $containerToday.find(".checkbox-item:checked").length === $containerToday.find(".checkbox-item").length;
+
+                // Toggle the state of checkboxes
+                $containerToday.find("tr:visible").each(function () {
+                    const $checkbox = $(this).find(".checkbox-item");
+                    $checkbox.prop("checked", !allChecked); // Toggle the state
+                });
+
+                // Count the selected checkboxes
+                const selectedCheckboxes = $containerToday.find(".checkbox-item:checked").length;
+
+            } else if ($containerWeek.is(":visible")) {
+                // Check if all checkboxes are checked
+                const allChecked = $containerWeek.find(".checkbox-item:checked").length === $containerWeek.find(".checkbox-item").length;
+
+                // Toggle the state of checkboxes
+                $containerWeek.find("tr:visible").each(function () {
+                    const $checkbox = $(this).find(".checkbox-item");
+                    $checkbox.prop("checked", !allChecked); // Toggle the state
+                });
+
+                // Count the selected checkboxes
+                const selectedCheckboxes = $containerWeek.find(".checkbox-item:checked").length;
+
+            }
+            else if ($containerMonth.is(":visible")) {
+                // Check if all checkboxes are checked
+                const allChecked = $containerMonth.find(".checkbox-item:checked").length === $containerMonth.find(".checkbox-item").length;
+
+                // Toggle the state of checkboxes
+                $containerMonth.find("tr:visible").each(function () {
+                    const $checkbox = $(this).find(".checkbox-item");
+                    $checkbox.prop("checked", !allChecked); // Toggle the state
+                });
+
+                // Count the selected checkboxes
+                const selectedCheckboxes = $containerMonth.find(".checkbox-item:checked").length;
+
+            }
+            updateSelectedCount();
+        });
+
+
+
+
 
         // Function to handle checkbox change event
         function handleCheckboxChange() {
             // Check if any checkboxes are checked
             const anyChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
-            // Show/hide the delete button accordingly
+
 
         }
 
@@ -1674,16 +1758,30 @@
 
         // Function to show a toast notification (you can use any toast library)
         function showToastNotification(message, type) {
-            // Implement your toast notification logic here.
-            // You can use a library like 'toastr' or 'react-toastify' for this purpose.
-            // For simplicity, I'll provide a simple alert as an example:
             alert(`${type.toUpperCase()}: ${message}`);
         }
+
+
     </script>
 
 
 
 
+
+
+
+
+
+    <script>
+
+
+
+
+
+
+
+
+    </script>
 
 
 

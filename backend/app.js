@@ -43,7 +43,7 @@ app.set('views', path.join(__dirname, '../frontend'))
 let dburl = "mongodb+srv://roameramit2001:roameramit2001@cluster0.amndb01.mongodb.net/?retryWrites=true&w=majority"
 let dburlof = "mongodb://127.0.0.1/logindataAdmin"
 // Connect to database
-mongoose.connect(dburl).then(() => {
+mongoose.connect(dburlof).then(() => {
     console.log("DB Connected")
 }).catch((err) => {
     console.log(err)
@@ -224,17 +224,17 @@ app.get("/dashboard", async (req, res) => {
         const todayEmails = todayData.length;
 
 
-        // Calculate the start of the current month
-        const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
 
-        // Calculate the start and end of the current week
-        const startOfWeek = new Date(startOfMonth);
-        while (startOfWeek.getDay() !== 1) {
-            // Find the first Monday of the month
-            startOfWeek.setDate(startOfWeek.getDate() + 1);
-        }
-        const endOfWeek = new Date(startOfWeek);
+        // Calculate Current Week of the month 
+        const startOfWeek = new Date(currentDate);
+        startOfWeek.setDate(currentDate.getDate() - currentDate.getDay() + 1);
+        startOfWeek.setHours(0, 0, 0, 0);
+
+        const endOfWeek = new Date(currentDate);
         endOfWeek.setDate(startOfWeek.getDate() + 6);
+        endOfWeek.setHours(23, 59, 59, 999);
+
+
 
         // Find data for the current week using the "createdAt" field
         const weeklyData = await DomainEmail.find({
@@ -243,12 +243,12 @@ app.get("/dashboard", async (req, res) => {
                 $lte: endOfWeek
             }
         });
-
         const weeklyEmails = weeklyData.length;
 
 
 
-
+        // calculte Current Month
+        const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
         // Calculate the end of the current month
         const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
 
@@ -265,7 +265,7 @@ app.get("/dashboard", async (req, res) => {
 
 
 
-
+        // Calculate Total Data 
         const totaldata = await DomainEmail.find()
         const totalEmails = totaldata.length;
 
@@ -457,7 +457,20 @@ app.delete('/api/categories', async (req, res) => {
 // Filter the data date and category in website Emails
 app.get('/filterdateandcategory', async (req, res) => {
     try {
-        const selectedCategory = req.query.selectedCategory;
+        const selectedCategories = req.query.selectedCategory;
+        console.log(selectedCategories)
+
+        let selectedCategoryArray;
+
+        selectedCategoryArray = Array.isArray(selectedCategories)
+            ? selectedCategories
+            : [selectedCategories];
+
+        if (typeof selectedCategories === 'string') {
+            // Split the comma-separated string into an array
+            selectedCategoryArray = selectedCategories.split(',');
+
+        }
         const startDate = new Date(req.query.startDate);
         const endDate = new Date(req.query.endDate);
 
@@ -466,7 +479,7 @@ app.get('/filterdateandcategory', async (req, res) => {
 
         // Create the query object with 'category' and 'createdAt' fields
         const query = {
-            category: { $in: selectedCategory },
+            category: { $in: selectedCategoryArray },
             createdAt: {
                 $gte: startDate,
                 $lt: endDate,
@@ -557,7 +570,7 @@ app.post('/api/save-emails', async (req, res) => {
     await newEmail.save();
 
     console.log('Emails saved successfully to the database!');
-    res.json({ message: 'Emails saved successfully to the database' });
+    return res.json({ message: 'Emails saved successfully to the database' });
 });
 
 
@@ -582,6 +595,57 @@ app.get("/Profile", async (req, res) => {
         console.log(error)
     }
 })
+
+
+
+
+
+
+// Filter data btoth in website emails  day and category
+app.get('/api/filterDataboth', async (req, res) => {
+    const selectedCategories = req.query.selectedCategory;
+    console.log(selectedCategories)
+
+    let selectedCategoryArray;
+
+    selectedCategoryArray = Array.isArray(selectedCategories)
+        ? selectedCategories
+        : [selectedCategories];
+
+    if (typeof selectedCategories === 'string') {
+        // Split the comma-separated string into an array
+        selectedCategoryArray = selectedCategories.split(',');
+
+    }
+    const selectedDate = new Date(req.query.selectedDate);
+
+    // Set the startDate to the beginning of the selected day (00:00:00)
+    const startDate = new Date(selectedDate);
+    startDate.setHours(0, 0, 0, 0);
+
+    // Set the endDate to the end of the selected day (23:59:59)
+    const endDate = new Date(selectedDate);
+    endDate.setHours(23, 59, 59, 999);
+
+    try {
+        // Create the query object with both 'category' and 'createdAt' fields
+        const query = {
+            category: { $in: selectedCategoryArray },
+            createdAt: {
+                $gte: startDate,
+                $lte: endDate,
+            },
+        };
+
+        // Perform the query to get the filtered data
+        const filteredData = await DomainEmail.find(query);
+
+        res.json(filteredData);
+    } catch (error) {
+        console.error('Error occurred:', error);
+        res.status(500).json({ error: 'An unexpected error occurred. Please try again later.' });
+    }
+});
 
 
 
