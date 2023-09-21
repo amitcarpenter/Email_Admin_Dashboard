@@ -1,0 +1,114 @@
+
+function updateselectedCountToday() {
+    const checkboxesToday = document.getElementsByClassName('checkbox-item-today');
+    const selectedCountToday = document.getElementById('selectedCount');
+    let count = 0;
+
+    for (let i = 0; i < checkboxesToday.length; i++) {
+        if (checkboxesToday[i].checked) {
+            count++;
+        }
+
+    }
+
+    selectedCountToday.textContent = count;
+}
+
+// Event listener to handle checkbox selection
+const checkboxesTodays = document.getElementsByClassName('checkbox-item-today');
+for (let i = 0; i < checkboxesTodays.length; i++) {
+    checkboxesTodays[i].addEventListener('change', () => {
+        updateselectedCountToday();
+    });
+}
+
+// Update the count of selected rows on page load
+window.addEventListener('DOMContentLoaded', () => {
+    updateselectedCountToday();
+});
+// Select Box Count End 
+
+
+// Check box delete button and show all selected row
+// Get all checkboxesToday
+const checkboxesToday = document.querySelectorAll('.checkbox-item-today');
+// Get the delete button
+const deleteButtonToday = document.getElementById('delete-btn');
+const selectAllButtonToday = document.getElementById('select-all-btn');
+
+// Function to handle "Select All" button click event
+function handleselectAllButtonTodayClick() {
+    const checkboxesToday = document.querySelectorAll('.checkbox-item-today');
+    const areAllChecked = Array.from(checkboxesToday).every(checkbox => checkbox.checked);
+
+    // Toggle the checked state of all checkboxesToday
+    checkboxesToday.forEach(checkbox => {
+        checkbox.checked = !areAllChecked;
+    });
+    updateselectedCountToday()
+}
+
+// Attach the handleselectAllButtonTodayClick function to the "Select All" button click event
+selectAllButtonToday.addEventListener('click', handleselectAllButtonTodayClick);
+
+// Function to handle checkbox change event
+function handleCheckboxChange() {
+    // Check if any checkboxesToday are checked
+    const anyChecked = Array.from(checkboxesToday).some(checkbox => checkbox.checked);
+
+
+}
+
+// Attach the handleCheckboxChange function to each checkbox
+checkboxesToday.forEach(checkbox => checkbox.addEventListener('change', handleCheckboxChange));
+
+async function handledeleteButtonTodayClick() {
+    // Get all checked checkboxesToday
+    const checkedcheckboxesToday = Array.from(checkboxesToday).filter(checkbox => checkbox.checked);
+
+    // Check if any checkboxesToday are checked
+    if (checkedcheckboxesToday.length === 0) {
+        // If no checkboxesToday are checked, show a message to the user
+        alert('Please select at least one row to delete.');
+        return;
+    }
+
+    // Show the confirm popup
+    const confirmed = window.confirm('Are you sure you want to delete the selected rows?');
+
+    // If the user confirms, proceed with the deletion
+    if (confirmed) {
+        // Delete the selected rows from the database using the API
+        for (const checkbox of checkedcheckboxesToday) {
+            const id = checkbox.getAttribute('data-profile-id'); // Get the profile ID from the data attribute
+            try {
+                // Make a DELETE request to the API endpoint
+                const response = await fetch(`/domainEmail/${id}`, {
+                    method: 'DELETE',
+                });
+                if (response.ok) {
+                    checkbox.closest('tr').remove();
+                } else {
+                    console.error('Error occurred:', response.status, response.statusText);
+                    // Show an error message using a toast notification library
+                    showToastNotification('Deletion failed. Please try again later.', 'error');
+                }
+            } catch (error) {
+                console.error('Error occurred:', error);
+                // Show an error message using a toast notification library
+                showToastNotification('An unexpected error occurred. Please try again later.', 'error');
+            }
+        }
+
+    }
+}
+
+
+deleteButtonToday.addEventListener('click', handledeleteButtonTodayClick);
+
+// Function to show a toast notification (you can use any toast library)
+function showToastNotification(message, type) {
+    alert(`${type.toUpperCase()}: ${message}`);
+}
+
+
