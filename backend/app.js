@@ -51,6 +51,9 @@ mongoose.connect(dburl).then(() => {
 })
 
 
+
+
+
 // User Model
 const userSchema = new mongoose.Schema({
     name: {
@@ -654,3 +657,10 @@ app.get('/api/filterDataboth', async (req, res) => {
 app.listen(4000, () => {
     console.log("Server is working on 4000 ")
 })
+
+
+
+
+// "engines": {
+//     "node": ">=14.20.1"
+// },
