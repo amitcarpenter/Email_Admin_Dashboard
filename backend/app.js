@@ -1,10 +1,10 @@
-const express = require("express")
-const BodyParser = require("body-parser")
-const mongoose = require("mongoose")
-const ejs = require("ejs")
-const cors = require("cors")
-const path = require("path")
-const app = express()
+const express = require("express");
+const BodyParser = require("body-parser");
+const mongoose = require("mongoose");
+const ejs = require("ejs");
+const cors = require("cors");
+const path = require("path");
+const app = express();
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const session = require('express-session')
@@ -13,7 +13,7 @@ const fs = require('fs');
 
 
 const jwtSecretKey = 'AmitcarPenter';
-const sessoinSecret = "hellomynameisamit"
+const sessoinSecret = "hellomynameisamit";
 
 // Middle ware
 app.use(
@@ -23,11 +23,11 @@ app.use(
         saveUninitialized: false  // Set saveUninitialized option to false
     })
 );
-app.use(express.json())
-app.use(BodyParser.json())
-app.use(express.urlencoded({ extended: true }))
-app.use(BodyParser.urlencoded({ extended: true }))
-app.use(cors())
+app.use(express.json());
+app.use(BodyParser.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(BodyParser.urlencoded({ extended: true }));
+app.use(cors());
 app.use('/css', express.static(path.join(__dirname, '../frontend/css')));
 app.use('/icons', express.static(path.join(__dirname, '../frontend/icons')));
 app.use('/images', express.static(path.join(__dirname, '../frontend/images')));
