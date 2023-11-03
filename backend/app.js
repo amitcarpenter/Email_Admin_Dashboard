@@ -650,24 +650,6 @@ app.get('/api/filterDataboth', async (req, res) => {
     }
 });
 
-function hitURL() {
-    const urlToHit = "https://emails-lead.onrender.com/";
-    fetch(urlToHit)
-        .then(response => {
-            if (response.ok) {
-                console.log(`URL "${urlToHit}" was successfully hit at ${new Date()}`);
-            } else {
-                console.error(`Failed to hit URL "${urlToHit}" at ${new Date()}`);
-            }
-        })
-        .catch(error => {
-            console.error(`Error while hitting URL "${urlToHit}": ${error}`);
-        });
-}
-
-hitURL(); 
-const intervalID = setInterval(hitURL, 50000);
-
 
 
 
