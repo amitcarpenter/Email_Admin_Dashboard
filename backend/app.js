@@ -657,16 +657,21 @@ app.post('/registerLinkedin', async (req, res) => {
   const { name, email, password } = req.body; // Extracting user data from the request body
 
   try {
+      console.log(req.body);
+      console.log("hello");
     // Check if the email is already registered
     const existingUser = await User.findOne({ email });
 
+      console.log("secon");
     if (existingUser) {
       return res.status(400).json({ message: "Email already exists" });
     }
 
+      console.log("thired");
     // Hash the password using bcrypt for security
     const hashedPassword = await bcrypt.hash(password, 10);
 
+      console.log("ahse");
     // Create a new user based on the schema
     const newUser = new User({
       name,
@@ -674,9 +679,11 @@ app.post('/registerLinkedin', async (req, res) => {
       password: hashedPassword, // Store the hashed password in the database
     });
 
+      console.log("savebefore");
     // Save the new user to the database
     await newUser.save();
 
+      console.log("saved");
     res.status(201).json({ message: "User registered successfully" });
   } catch (error) {
     res.status(500).json({ message: "Registration failed" });
