@@ -652,6 +652,40 @@ app.get('/api/filterDataboth', async (req, res) => {
 
 
 
+// Define route for user registration
+app.post('/registerLinkedin', async (req, res) => {
+  const { name, email, password } = req.body; // Extracting user data from the request body
+
+  try {
+    // Check if the email is already registered
+    const existingUser = await User.findOne({ email });
+
+    if (existingUser) {
+      return res.status(400).json({ message: "Email already exists" });
+    }
+
+    // Hash the password using bcrypt for security
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create a new user based on the schema
+    const newUser = new User({
+      name,
+      email,
+      password: hashedPassword, // Store the hashed password in the database
+    });
+
+    // Save the new user to the database
+    await newUser.save();
+
+    res.status(201).json({ message: "User registered successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Registration failed" });
+  }
+});
+
+
+
+
 
 app.listen(4000, () => {
     console.log("Server is working on 4000 ")
